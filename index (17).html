@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wedding Leftover Food Distribution</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #ffe4e1, #fffaf0);
+      margin: 0 auto;
+      padding: 20px;
+      max-width: 700px;
+      color: #3e2c2c;
+    }
+
+    h1, h2 {
+      color: #c0392b;
+      text-align: center;
+      text-shadow: 1px 1px 2px #f9c5b7;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: #fff0e6;
+      padding: 25px;
+      border-radius: 15px;
+      border: 2px solid #e74c3c;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #8e2a25;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid #e67e22;
+      background-color: #fff7f0;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #e74c3c;
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #c0392b;
+    }
+
+    #foodList {
+      background: #fef6f0;
+      border: 2px solid #e67e22;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-top: 30px;
+      color: #3e2c2c;
+    }
+
+    .foodItem {
+      border-bottom: 1px solid #ddd;
+      padding: 12px 0;
+    }
+
+    .foodItem:last-child {
+      border-bottom: none;
+    }
+
+    .foodItem strong {
+      color: #c0392b;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wedding Leftover Food Distribution</h1>
+
+  <form id="foodForm">
+    <label for="organizerName">Organizer Name</label>
+    <input type="text" id="organizerName" name="organizerName" required />
+
+    <label for="eventDate">Event Date</label>
+    <input type="date" id="eventDate" name="eventDate" required />
+
+    <label for="foodDetails">Food Details</label>
+    <textarea id="foodDetails" name="foodDetails" rows="3" required></textarea>
+
+    <label for="quantity">Quantity (approximate)</label>
+    <input type="text" id="quantity" name="quantity" required />
+
+    <label for="contact">Contact Number</label>
+    <input type="tel" id="contact" name="contact" required />
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2>Available Leftover Food</h2>
+  <div id="foodList"></div>
+
+  <script>
+    const form = document.getElementById('foodForm');
+    const foodList = document.getElementById('foodList');
+
+    function loadFoodData() {
+      const data = localStorage.getItem('foodData');
+      return data ? JSON.parse(data) : [];
+    }
+
+    function saveFoodData(data) {
+      localStorage.setItem('foodData', JSON.stringify(data));
+    }
+
+    function renderFoodList() {
+      const foodData = loadFoodData();
+      if (foodData.length === 0) {
+        foodList.innerHTML = '<p>No leftover food submissions yet.</p>';
+        return;
+      }
+      foodList.innerHTML = '';
+      foodData.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'foodItem';
+        div.innerHTML = `
+          <strong>Organizer:</strong> ${item.organizerName} <br />
+          <strong>Date:</strong> ${item.eventDate} <br />
+          <strong>Food Details:</strong> ${item.foodDetails} <br />
+          <strong>Quantity:</strong> ${item.quantity} <br />
+          <strong>Contact:</strong> ${item.contact}
+        `;
+        foodList.appendChild(div);
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newEntry = {
+        organizerName: form.organizerName.value.trim(),
+        eventDate: form.eventDate.value,
+        foodDetails: form.foodDetails.value.trim(),
+        quantity: form.quantity.value.trim(),
+        contact: form.contact.value.trim(),
+      };
+
+      const foodData = loadFoodData();
+      foodData.push(newEntry);
+      saveFoodData(foodData);
+      renderFoodList();
+      form.reset();
+      alert('Submission successful!');
+    });
+
+    // Load on page start
+    renderFoodList();
+  </script>
+</body>
+</html>
